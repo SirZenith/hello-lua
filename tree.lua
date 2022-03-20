@@ -73,43 +73,49 @@ end
 
 function BinSearchTree:delete(data)
     -- 删除包含指定 data 的最浅结点，并返回该结点，没有搜索结果返回 nil
-    local function get(root)
-        -- 搜索目标结点及其父结点
-        if not root then
-            return nil, nil
+    local function take_deepest_child(root, target)
+        if root == nil then
+            return nil
         end
 
-        if data > root.data then
-            if not root.r_child then
-                return nil, nil
-            elseif root.r_child.data == data then
-                root.r_child = nil
-                return root.r_child, root
-            else
-                return get(root.r_child)
+        local parent = nil
+        local curr = root
+        while curr[target] do
+            parent = curr
+            curr = curr[target]
+        end
+
+        if parent then
+            parent[target] = nil
+        end
+        return curr
+    end
+
+    local function order_preserve_move(root, parent)
+        local target_node = nil
+        if root == parent.r_child then
+            if root.r_child then
+                target = take_deepest_child(root.r_child, "l_child")
+            elseif root.r_child then
+                target = take_deepest_child(root.l_child, "r_child")
             end
-        elseif data < root.data then
-            if not root.l_child then
-                return nil, nil
-            elseif root.l_child.data == data then
-                root.l_child = nil
-                return root.l_child, root
-            else
-                return get(root.l_child)
-            end
+            parent["r_child"] = target
+        end
+    end
+
+    local parent = nil
+    local curr = self.root
+    while curr do
+        if data > curr.data then
+            parent = curr
+            curr = curr.r_child
+        elseif data < curr.data then
+            parent = curr
+            curr = curr.l_child
         else
+            -- target found
+            
         end
     end
-    local target, parent = self:get(data)
-    if not target then
-        return nil
-    end
-
-    if not target.l_child and not target.r_child then
-        return target
-    end
-
-    if not parent.l_child then
-    else
     end
 end
